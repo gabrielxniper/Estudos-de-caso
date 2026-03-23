@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 export default function App() {
     // 1. Aqui entram as variáveis de estado (useState)
     type Tarefa = {
@@ -12,6 +12,9 @@ export default function App() {
     // 2. Aqui entram as funções lógicas (adicionar, remover, favoritar)
 
     function adicionarTarefa( ){
+        if (userText.trim() === ''){
+            return Alert.alert("Escreva algo para add")
+        }
         const novaTarefa = {
             id: Date.now().toString(),
             texto: userText,
@@ -53,17 +56,32 @@ export default function App() {
             <FlatList
                 data={tarefas}
                 keyExtractor={(tarefa) => tarefa.id}
-                renderItem={({ item }) => (
+                
+                renderItem={({ item }) => {
+                    let favoritado;
+                    if (item.favorito === true) {
+                        favoritado = '⭐';
+                    } else {
+                        favoritado = '';
+                    }
+                    let textoBotao;
+                    if (item.favorito === true) {
+                        textoBotao = 'Desfavoritar';
+                    } else {
+                        textoBotao = 'Favoritar';
+                    }
+                    return(
                     <View style={estilos.tarefaItem}>
                         <Text style={estilos.tarefaTexto}>
                             {/* Se a tarefa for favorita, mostramos uma estrela */}
-                            {item.texto} {item.favorito ? '⭐' : ''}
+                            {item.texto} 
+                            {favoritado}
                         </Text>
 
                         {/* Botão que chama a nossa função de favoritar passando o ID desta tarefa */}
-                        <Button title="Favoritar" onPress={() => favoritarTarefa(item.id)} />
+                        <Button title= {textoBotao} onPress={() => favoritarTarefa(item.id)} />
                     </View>
-                )}
+                )}}
             />
         </View>
     );
